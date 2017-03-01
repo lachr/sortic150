@@ -22,29 +22,27 @@ String SerialConnection::listen() {
   String RecievedString = "";
   while (Serial.available())
   {
-    if(Serial.available()) {
-      //get input character
-      char recievedCharacter = Serial.read();
-      prevRecieveTime = millis();
+    //get input character
+    char recievedCharacter = Serial.read();
+    prevRecieveTime = millis();
 
-      //Build String and return when done
-      if ((recievedCharacter != 10)and(recievedCharacter != 13)) // \n = Zeilenumbruch
-      {
-        //Serial.println("rec");
-        RecievedString += char(recievedCharacter);
+    //Build String and return when done
+    if ((recievedCharacter != 10)and(recievedCharacter != 13)) // \n = Zeilenumbruch
+    {
+      //Serial.println("rec");
+      RecievedString += char(recievedCharacter);
 
-      }
-      else if(millis()-prevRecieveTime>100) {
-        Serial.println("timeout");
-        return "";
-
-      }
-      else  //String complete
-      {
-        break;
-      }
     }
-    //delay(2);
+    else if(millis()-prevRecieveTime>100) {
+      Serial.println("timeout");
+      return "";
+
+    }
+    else  //String complete
+    {
+      break;
+    }
+    delay(2);
   }
   //return string if it hasn't been completed after 500ms
   //if(!RecievedString.equals("")) Serial.println(RecievedString);
