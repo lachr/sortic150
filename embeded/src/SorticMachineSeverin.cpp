@@ -1,3 +1,5 @@
+/*
+
 #include "SorticMachineSeverin.h"
 
 #include "MoverSeverin.h"
@@ -10,6 +12,7 @@
 #include <MFRC522.h> //Required?
 #include <Wire.h> //Required?
 #include <Adafruit_MotorShield.h> //Required for setup
+
 
 SorticMachineSeverin::SorticMachineSeverin(Placer *tempPlacer, Detector *tempDetector, Mover *tempMover, Adafruit_MotorShield *tempMotorShield) : SorticMachine(tempPlacer, tempDetector, tempMover) {
   currentMotorShield = tempMotorShield;
@@ -144,13 +147,13 @@ bool SorticMachineSeverin::arrayByte8Equals(byte a[8], byte b[8]) {
 
 partColor SorticMachineSeverin::identifyPart(byte partArray[])
 {
-  /*
+
   1) is there a part?
   2) get part array
   3) identify part
-  */
+
   if(currentDetector->RfidCardIsPresent()){
-    
+
     currentDetector->getPartArray(currentPart);
 
     if(arrayByte8Equals(currentPart,teilArraySchwarz)){
@@ -173,3 +176,4 @@ partColor SorticMachineSeverin::identifyPart(byte partArray[])
     return partColor::none;
   }
 }
+*/

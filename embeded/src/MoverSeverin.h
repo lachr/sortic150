@@ -9,13 +9,14 @@
 class MoverSeverin : public Mover
 {
   public:
-    MoverSeverin(Adafruit_DCMotor *tempDriverMotor, int tempDistanceSensorPin, int PosPickup, int posDropA, int posDropB, int posDropC);
-    void moveToPosition(MoverPosition newTarget);
-    bool moverLoop(); //true = complete, false = in progress
-    int getPositionValue(MoverPosition tempPosition);
+    MoverSeverin(int adress, int target, Adafruit_DCMotor *tempDriverMotor, int tempDistanceSensorPin, int PosPickup, int posDropA, int posDropB, int posDropC);
+    Message componentLoop();
   private:
     MedianFilter thisMedianFilter;
     bool ForwardIsLeft = true;
+
+    bool isInitialized = false;
+
     int driveTollerance = 2;
     int maxSpeed = 200;
     int distanceSensorPin;

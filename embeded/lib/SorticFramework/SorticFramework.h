@@ -4,6 +4,30 @@
 #include "Arduino.h"
 #include "Modular.h"
 
+enum class MoverPosition {
+  pickUp,
+  dropA,
+  dropB,
+  dropC
+};
+
+class Mover : public Component
+{
+  public:
+    Mover(int adress, int target);
+    virtual Message componentLoop();
+    bool recieveMessage(int sender, String message);
+
+  protected:
+    bool movementComplete;
+    MoverPosition currentTarget;
+};
+
+enum class MachineLogicState {
+  idle,
+  sorting
+};
+
 enum class PlacerActionType {
   none,
   pickUp,
@@ -19,9 +43,9 @@ enum class PlacerActionDirection {
 class Placer : public Component
 {
   public:
-    Placer();
-    virtual void setAction(PlacerActionType newPlacerActionType, PlacerActionDirection newPlacerActionDirection);
-    virtual bool placerLoop(); //true = complete, false = in progress
+    Placer(int adress, int target);
+    virtual Message componentLoop(); //true = complete, false = in
+    bool recieveMessage(int sender, String message);
 
   protected:
     bool hasPart;
@@ -33,55 +57,33 @@ class Placer : public Component
 class Detector : public Component
 {
   public:
-    Detector();
-    virtual void getPartArray(byte partArray[]); //Function writes result into partArray[]
-    //byte * getPartArray(); //Funciton returns pointer to static array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
-    virtual bool RfidCardIsPresent();
+    Detector(int adress, int target);
+    virtual Message componentLoop();
+    bool recieveMessage(int sender, String message);
 
   protected:
-
+    bool scanning;
 };
 
-enum class MoverPosition {
-  pickUp,
-  dropA,
-  dropB,
-  dropC
-};
-
-
-class Mover : public Component
-{
-  public:
-    Mover();
-    virtual void moveToPosition(MoverPosition newTarget);
-    virtual bool moverLoop(); //true = complete, false = in progress
-
-  protected:
-    bool movementComplete;
-};
-
-enum class MachineLogicState {
-  idle,
-  sorting
-};
-
-class SorticMachine
+class SorticController : public Component
 {
   public:
     //Functions;
-    SorticMachine(Placer *tempPlacer, Detector *tempDetector, Mover *tempMover);
-    virtual void loop();
+    SorticController(int adress, int target, int mover, int placer, int detector);
+    bool recieveMessage(int sender, String message);
+    virtual Message componentLoop();
 
   protected:
-    Placer *currentPlacer;
-    Detector *currentDetector;
-    Mover *currentMover;
-    MachineLogicState currentMachineLogicState = MachineLogicState::idle;
+    int placerAdress;
+    int detectorAdress;
+    int moverAdress;
     MoverPosition currentDropTarget;
     MoverPosition currentPickupTarget;
     PlacerActionDirection currentPickupDirection;
     PlacerActionDirection currentPlaceDirection;
+    bool moverIsFinished;
+    bool placerIsFinished;
+    String currentPartMessage;
 };
 
 #endif

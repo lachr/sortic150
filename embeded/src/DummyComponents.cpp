@@ -4,15 +4,13 @@
 #include <MFRC522.h>
 #include <Wire.h>
 
-#include "DetectorSeverin.h"
+#include "DummyComponents.h"
 
-DetectorSeverin::DetectorSeverin(int adress, int target, MFRC522 *tempPartDetector) : Detector(adress, target) {
-  PartDetector = *tempPartDetector;
-  PartDetector.PCD_Init();
+DummyDetector::DummyDetector(int adress, int target) : Detector(adress, target) {
 
 }
 
-Message DetectorSeverin::componentLoop() {
+Message DummyDetector::componentLoop() {
   Message currentMessage;
 
   if(_componentState != working) {
@@ -20,30 +18,15 @@ Message DetectorSeverin::componentLoop() {
     return currentMessage;
   }
 
-  if (!PartDetector.PICC_IsNewCardPresent()) {
-    currentMessage.hasMessage = false;
-    return currentMessage;
+
+
+  if(millis()%10000==1) {
+    currentMessage.hasMessage = true;
+    currentMessage.message = millis();
+    _componentState = idle;
   }
 
-  currentMessage.hasMessage = true;
 
-  byte blockAddr = 0;
-  byte bufferSize = 18;
-  MFRC522::StatusCode status;
-  byte partArray[8];
-
-  status = (MFRC522::StatusCode) PartDetector.MIFARE_Read(blockAddr, partArray, &bufferSize);
-
-  if(status != MFRC522::STATUS_OK) {
-    currentMessage.message = "error";
-    return currentMessage;
-  }
-  else {
-    currentMessage.message = partArray[0];
-    for(unsigned int i = 1 ; i<sizeof(partArray)/sizeof(partArray[0]); i++) {
-      currentMessage.message = ":" + currentMessage.message + partArray[i];
-    }
-  }
   currentMessage.sender = adress;
   currentMessage.target = target;
   return currentMessage;

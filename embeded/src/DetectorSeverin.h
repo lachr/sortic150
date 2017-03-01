@@ -10,9 +10,8 @@
 class DetectorSeverin : public Detector
 {
   public:
-    DetectorSeverin(MFRC522 *tempPartDetector);
-    bool RfidCardIsPresent();
-    void getPartArray(byte partArray[]); //Funciton returns pointer to static array: https://www.tutorialspoint.com/cplusplus/cpp_return_arrays_from_functions.htm
+    DetectorSeverin(int adress, int target, MFRC522 *tempPartDetector);
+    Message componentLoop();
   private:
     MFRC522 PartDetector;
 };

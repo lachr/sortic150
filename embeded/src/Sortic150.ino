@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+/*
 #include <SPI.h>
 #include <MFRC522.h>
 #include <Wire.h>
@@ -12,6 +13,13 @@
 #include "PlacerSeverin.h"
 #include "DetectorSeverin.h"
 
+*/
+#include "DummyComponents.h"
+#include "SorticFramework.h"
+#include "SerialConnection.h"
+#include "Modular.h"
+
+/*
 //Sensors:
 int DistanceSensorPin = A1;
 
@@ -30,10 +38,29 @@ PlacerSeverin *currentPlacer;
 DetectorSeverin *currentDetector;
 MoverSeverin *currentMover;
 SorticMachineSeverin *thisSorticMachine;
+*/
+
+
+DummyDetector *testDetector;
+SerialConnection *testConnection;
+
+CommunicationNode *currentNode;
+
+
 
 
 void setup() {
+  testDetector = new DummyDetector(2,1);
+  testConnection = new SerialConnection(1, 9600);
+
+  currentNode = new CommunicationNode(testDetector, testConnection);
+  //currentNode = new CommunicationNode();
+
+
+  //currentNode.attachedComponent = &testDetector;
+  //currentNode.attachedConnection = &testConnection
   //Serial.begin(9600);
+  /*
   currentMotorShield.begin();
   SPI.begin();
   currentPlacer = new PlacerSeverin(PlacerMotorBase, PlacerMotorArm, PlacerMotorClaw);
@@ -42,8 +69,10 @@ void setup() {
 
   thisSorticMachine = new SorticMachineSeverin(currentPlacer, currentDetector, currentMover, &currentMotorShield);
   delay(5000);
+  */
 }
 
 void loop() {
-  thisSorticMachine->loop();
+
+  currentNode->loopAllAttached();
 }

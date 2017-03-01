@@ -1,9 +1,12 @@
+/*
+
 #ifndef SorticMachineSeverin_h
 #define SorticMachineSeverin_h
 
 #include "MoverSeverin.h"
 #include "PlacerSeverin.h"
 #include "DetectorSeverin.h"
+
 
 #include "Arduino.h"
 #include "SorticFramework.h"
@@ -22,7 +25,7 @@ enum class partColor {
   notDeclared
 };
 
-class SorticMachineSeverin : public SorticMachine
+class SorticMachineSeverin// : public SorticMachine
 {
   public:
     SorticMachineSeverin(Placer *tempPlacer, Detector *tempDetector, Mover *tempMover, Adafruit_MotorShield *tempMotorShield);
@@ -38,6 +41,9 @@ class SorticMachineSeverin : public SorticMachine
     byte teilArrayGrauSchwarz[8] = {1,2,3,4,5,6,7,8};
     byte currentPart[8];
     partColor currentPartColor;
+
 };
 
 #endif
+
+*/
