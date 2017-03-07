@@ -16,7 +16,7 @@ class Mover : public Component
   public:
     Mover(int adress, int target);
     virtual Message componentLoop();
-    bool recieveMessage(int sender, String message);
+    bool recieveMessage(Message transmission);
 
   protected:
     bool movementComplete;
@@ -45,7 +45,7 @@ class Placer : public Component
   public:
     Placer(int adress, int target);
     virtual Message componentLoop(); //true = complete, false = in
-    bool recieveMessage(int sender, String message);
+    bool recieveMessage(Message transmission);
 
   protected:
     bool hasPart;
@@ -59,7 +59,7 @@ class Detector : public Component
   public:
     Detector(int adress, int target);
     virtual Message componentLoop();
-    bool recieveMessage(int sender, String message);
+    bool recieveMessage(Message transmission);
 
   protected:
     bool scanning;
@@ -70,7 +70,7 @@ class SorticController : public Component
   public:
     //Functions;
     SorticController(int adress, int target, int mover, int placer, int detector);
-    bool recieveMessage(int sender, String message);
+    bool recieveMessage(Message transmission);
     virtual Message componentLoop();
 
   protected:

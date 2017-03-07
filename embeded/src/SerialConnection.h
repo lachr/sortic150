@@ -9,7 +9,7 @@ class SerialConnection : public CommunicationConnection
   public:
     SerialConnection(int adress, int baudRate); //(&newAttachedAdresses)[10]
     String listen();
-    bool sendMessage(int target, int sender, String message);
+    bool sendMessage(Message transmission);
 
   private:
 

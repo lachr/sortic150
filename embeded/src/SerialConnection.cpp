@@ -7,12 +7,12 @@ SerialConnection::SerialConnection(int adress, int baudRate) : CommunicationConn
   Serial.begin(baudRate);
 }
 
-bool SerialConnection::sendMessage(int target, int sender, String message) {
-  Serial.print(target);
+bool SerialConnection::sendMessage(Message transmission) {
+  Serial.print(transmission.target);
   Serial.print(";");
-  Serial.print(sender);
+  Serial.print(transmission.sender);
   Serial.print(";");
-  Serial.println(message);
+  Serial.println(transmission.message);
   Serial.flush();
   return true;
 }

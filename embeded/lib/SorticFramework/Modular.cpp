@@ -65,12 +65,14 @@ void CommunicationNode::setInterrput(bool enableInterrupt) {
   */
 }
 
-bool CommunicationNode::sendMessage(int target, int sender, String message) {
-  if(target == attachedComponent->getAdress()) {
-    return attachedComponent->recieveMessage(sender, message);
+bool CommunicationNode::sendMessage(Message transmission) {
+  if(transmission.target == attachedComponent->getAdress()) {
+    return attachedComponent->recieveMessage(transmission);
   }
-  else
-  attachedConnection->sendMessage(target, sender, message);
+  else {
+    return attachedConnection->sendMessage(transmission);
+  }
+
   /*
   for(unsigned int i = 0; i < sizeof(attachedComponents)/sizeof(attachedComponents[0]); i++) {
     if(target == attachedComponents[i].getAdress()) {
@@ -90,7 +92,7 @@ bool CommunicationNode::sendMessage(int target, int sender, String message) {
 void CommunicationNode::loopAllAttached() {
   Message currentMessage = attachedComponent->componentLoop();
   if(currentMessage.hasMessage == true) {
-    this->sendMessage(currentMessage.target, currentMessage.sender, currentMessage.message);
+    this->sendMessage(currentMessage);
   }
 
   String recievedMessage = attachedConnection->listen();
@@ -98,27 +100,32 @@ void CommunicationNode::loopAllAttached() {
   if(!recievedMessage.equalsIgnoreCase("")) { //adress:sender:message
     //ToDo: Sepparate message
 
-    int target;
-    int sender;
+    Message currentMessage;
     int indexA;
     int indexB;
-    String message;
     String substring;
 
     indexA = recievedMessage.indexOf(';');
     substring = recievedMessage.substring(0,indexA);
-    target = substring.toInt();
+    currentMessage.target = substring.toInt();
 
     indexB = recievedMessage.indexOf(';',indexA+1);
     substring = recievedMessage.substring(indexA+1,indexB);
-    sender = substring.toInt();
+    currentMessage.sender = substring.toInt();
 
-    message = recievedMessage.substring(indexB+1);
+    currentMessage.message = recievedMessage.substring(indexB+1);
 
-    if(target == 2) {
+    if(currentMessage.target == 2) {
 
-      bool hasWorked = attachedComponent->recieveMessage(sender, message);
-      if(!hasWorked) attachedConnection->sendMessage(1, 3, "message not accepted");
+      bool hasWorked = attachedComponent->recieveMessage(currentMessage);
+      if(!hasWorked){
+        Message errorMessage;
+        errorMessage.target = 1;
+        errorMessage.sender = 3;
+        errorMessage.message = "message not accepted";
+
+        attachedConnection->sendMessage(errorMessage);
+      }
     }
     //attachedConnection->sendMessage(target, sender, message);
   }

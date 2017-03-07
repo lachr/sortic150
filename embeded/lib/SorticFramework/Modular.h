@@ -10,9 +10,8 @@ enum ComponentState {
   interrupt
 };
 
-class Message {
-  public:
-    bool hasMessage = false;
+struct Message {
+    bool hasMessage = true;
     int target;
     int sender;
     String message;
@@ -24,7 +23,7 @@ class Component
     Component();
     //Component(int newAdress, int newTarget);
     virtual Message componentLoop();
-    virtual bool recieveMessage(int sender, String message);
+    virtual bool recieveMessage(Message transmission);
     void setInterrupt(bool enableInterrupt);
     int getAdress();
 
@@ -41,7 +40,7 @@ class CommunicationConnection {
     CommunicationConnection();
     //CommunicationConnection(int adress/*(&newAttachedAdresses)[10]*/);
     virtual String listen();
-    virtual bool sendMessage(int target, int sender, String message);
+    virtual bool sendMessage(Message transmission);
     bool hasConnectionAttached(int connection);
 
   private:
@@ -53,7 +52,7 @@ class CommunicationNode {
   public:
     //CommunicationNode();
     CommunicationNode(Component *theComponent, CommunicationConnection *theCommunicationConnection);
-    bool sendMessage(int target, int sender, String message);
+    bool sendMessage(Message transmission);
     void setInterrput(bool enableInterrupt);
     void loopAllAttached();
 

@@ -10,23 +10,23 @@ Placer::Placer(int adress, int target) : Component(){
 
 }
 
-bool Placer::recieveMessage(int sender, String message) {
+bool Placer::recieveMessage(Message transmission) {
 
   if(_componentState != idle) return false;
 
-  if(message.equalsIgnoreCase("PickUp Left")) {
+  if(transmission.message.equalsIgnoreCase("PickUp Left")) {
     currentPlacerActionType = PlacerActionType::pickUp;
     currentPlacerActionDirection = PlacerActionDirection::left;
   }
-  else if(message.equalsIgnoreCase("PickUp Right")) {
+  else if(transmission.message.equalsIgnoreCase("PickUp Right")) {
     currentPlacerActionType = PlacerActionType::pickUp;
     currentPlacerActionDirection = PlacerActionDirection::right;
   }
-  else if(message.equalsIgnoreCase("Place Left")) {
+  else if(transmission.message.equalsIgnoreCase("Place Left")) {
     currentPlacerActionType = PlacerActionType::place;
     currentPlacerActionDirection = PlacerActionDirection::left;
   }
-  else if(message.equalsIgnoreCase("Place Right")) {
+  else if(transmission.message.equalsIgnoreCase("Place Right")) {
     currentPlacerActionType = PlacerActionType::place;
     currentPlacerActionDirection = PlacerActionDirection::right;
   }
@@ -42,20 +42,20 @@ Mover::Mover(int adress, int target) : Component() {
   this-> target = target;
 }
 
-bool Mover::recieveMessage(int sender, String message) {
+bool Mover::recieveMessage(Message transmission) {
 
   if(_componentState != idle) return false;
 
-  if(message.equalsIgnoreCase("MoveTo PickUp")) {
+  if(transmission.message.equalsIgnoreCase("MoveTo PickUp")) {
     currentTarget = MoverPosition::pickUp;
   }
-  else if(message.equalsIgnoreCase("MoveTo dropA")) {
+  else if(transmission.message.equalsIgnoreCase("MoveTo dropA")) {
     currentTarget = MoverPosition::dropA;
   }
-  else if(message.equalsIgnoreCase("MoveTo dropB")) {
+  else if(transmission.message.equalsIgnoreCase("MoveTo dropB")) {
     currentTarget = MoverPosition::dropB;
   }
-  else if(message.equalsIgnoreCase("MoveTo dropC")) {
+  else if(transmission.message.equalsIgnoreCase("MoveTo dropC")) {
     currentTarget = MoverPosition::dropC;
   }
   else return false;
@@ -69,8 +69,8 @@ Detector::Detector(int adress, int target) : Component() {
   this-> target = target;
 }
 
-bool Detector::recieveMessage(int sender, String message) {
-  String theMessage = message;
+bool Detector::recieveMessage(Message transmission) {
+  String theMessage = transmission.message;
   theMessage.trim();
   if((_componentState != working)&&(_componentState != idle)) return false;
 
@@ -93,16 +93,16 @@ SorticController::SorticController(int adress, int target, int mover, int placer
   detectorAdress = detector;
 }
 
-bool SorticController::recieveMessage(int sender, String message) {
-  if(sender == detectorAdress) {
-    if(!message.equalsIgnoreCase("error")) {
-      message = currentPartMessage;
+bool SorticController::recieveMessage(Message transmission) {
+  if(transmission.sender == detectorAdress) {
+    if(!transmission.message.equalsIgnoreCase("error")) {
+      transmission.message = currentPartMessage;
       if(_componentState == idle) _componentState = working;
     }
   }
-  else if(message.equalsIgnoreCase("complete")) {
-    if(sender == moverAdress) moverIsFinished = true;
-    if(sender == placerAdress) placerIsFinished = true;
+  else if(transmission.message.equalsIgnoreCase("complete")) {
+    if(transmission.sender == moverAdress) moverIsFinished = true;
+    if(transmission.sender == placerAdress) placerIsFinished = true;
     if(moverIsFinished && placerIsFinished) _componentState = idle;
   }
   else return false;
