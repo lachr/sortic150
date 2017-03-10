@@ -1,12 +1,52 @@
 #include "SorticFramework.h"
 
-//Constructor
+Detector::Detector(int adress, int target) : Component(adress, target) {
 
+}
 
+bool Detector::recieveMessage(Message transmission) {
+  String theMessage = transmission.message;
+  theMessage.trim();
+  if((_componentState != working)&&(_componentState != idle)) return false;
 
-Placer::Placer(int adress, int target) : Component(){
-  this->adress = adress;
-  this-> target = target;
+  if(theMessage.equalsIgnoreCase("scan enable")) {
+    _componentState = working;
+  }
+  else if(theMessage.equalsIgnoreCase("scan disable")) {
+    _componentState = idle;
+  }
+  else return false;
+
+  return true;
+}
+
+Mover::Mover(int adress, int target) : Component(adress, target) {
+
+}
+
+bool Mover::recieveMessage(Message transmission) {
+
+  if(_componentState != idle) return false;
+
+  if(transmission.message.equalsIgnoreCase("MoveTo PickUp")) {
+    currentTarget = MoverPosition::pickUp;
+  }
+  else if(transmission.message.equalsIgnoreCase("MoveTo dropA")) {
+    currentTarget = MoverPosition::dropA;
+  }
+  else if(transmission.message.equalsIgnoreCase("MoveTo dropB")) {
+    currentTarget = MoverPosition::dropB;
+  }
+  else if(transmission.message.equalsIgnoreCase("MoveTo dropC")) {
+    currentTarget = MoverPosition::dropC;
+  }
+  else return false;
+
+  _componentState = working;
+  return true;
+}
+
+Placer::Placer(int adress, int target) : Component(adress, target){
 
 }
 
@@ -37,57 +77,10 @@ bool Placer::recieveMessage(Message transmission) {
 
 }
 
-Mover::Mover(int adress, int target) : Component() {
-  this->adress = adress;
-  this-> target = target;
-}
 
-bool Mover::recieveMessage(Message transmission) {
 
-  if(_componentState != idle) return false;
 
-  if(transmission.message.equalsIgnoreCase("MoveTo PickUp")) {
-    currentTarget = MoverPosition::pickUp;
-  }
-  else if(transmission.message.equalsIgnoreCase("MoveTo dropA")) {
-    currentTarget = MoverPosition::dropA;
-  }
-  else if(transmission.message.equalsIgnoreCase("MoveTo dropB")) {
-    currentTarget = MoverPosition::dropB;
-  }
-  else if(transmission.message.equalsIgnoreCase("MoveTo dropC")) {
-    currentTarget = MoverPosition::dropC;
-  }
-  else return false;
-
-  _componentState = working;
-  return true;
-}
-
-Detector::Detector(int adress, int target) : Component() {
-  this->adress = adress;
-  this-> target = target;
-}
-
-bool Detector::recieveMessage(Message transmission) {
-  String theMessage = transmission.message;
-  theMessage.trim();
-  if((_componentState != working)&&(_componentState != idle)) return false;
-
-  if(theMessage.equalsIgnoreCase("scan enable")) {
-    _componentState = working;
-  }
-  else if(theMessage.equalsIgnoreCase("scan disable")) {
-    _componentState = idle;
-  }
-  else return false;
-
-  return true;
-}
-
-SorticController::SorticController(int adress, int target, int mover, int placer, int detector) : Component() {
-  this->adress = adress;
-  this-> target = target;
+SorticController::SorticController(int adress, int target, int mover, int placer, int detector) : Component(adress, target) {
   moverAdress = mover;
   placerAdress = placer;
   detectorAdress = detector;

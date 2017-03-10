@@ -2,18 +2,22 @@
 #include "Modular.h"
 #include "SerialConnection.h"
 
-SerialConnection::SerialConnection(int adress, int baudRate) : CommunicationConnection() { //(&newAttachedAdresses)[10]
-  //this->attachedAdress = adress;
+SerialConnection::SerialConnection(int *adressList, unsigned int numberOfAdresses, int baudRate) : CommunicationConnection(adressList, numberOfAdresses) {//(&newAttachedAdresses)[10]
   Serial.begin(baudRate);
+  //Serial.println("created");
+  //while(!Serial);
 }
 
 bool SerialConnection::sendMessage(Message transmission) {
-  Serial.print(transmission.target);
-  Serial.print(";");
-  Serial.print(transmission.sender);
-  Serial.print(";");
-  Serial.println(transmission.message);
+  String a = "";
+  a = a + transmission.target;
+  a = a + ";";
+  a = a + transmission.sender;
+  a = a + ";";
+  a = a + transmission.message;
+  Serial.println(a);
   Serial.flush();
+
   return true;
 }
 
@@ -45,18 +49,6 @@ String SerialConnection::listen() {
     delay(2);
   }
   //return string if it hasn't been completed after 500ms
-  //if(!RecievedString.equals("")) Serial.println(RecievedString);
   if(!RecievedString.equalsIgnoreCase("")) Serial.println(RecievedString);
   return RecievedString;
-  /*
-  if(!RecievedString.equals("")) {
-    String TempString = RecievedString;
-    RecievedString = "";
-    return(TempString);
-  }
-
-  //return empty, if no string was read
-  //Serial.println("error");
-  return("");
-  */
 }

@@ -10,7 +10,10 @@ enum ComponentState {
   interrupt
 };
 
-struct Message {
+struct Message
+{
+  public:
+    //void switchAdresses();
     bool hasMessage = true;
     int target;
     int sender;
@@ -20,7 +23,7 @@ struct Message {
 class Component
 {
   public:
-    Component();
+    Component(int adress, int target);
     //Component(int newAdress, int newTarget);
     virtual Message componentLoop();
     virtual bool recieveMessage(Message transmission);
@@ -37,30 +40,30 @@ class Component
 
 class CommunicationConnection {
   public:
-    CommunicationConnection();
-    //CommunicationConnection(int adress/*(&newAttachedAdresses)[10]*/);
+    CommunicationConnection(int *adressList, unsigned int numberOfAdresses);
     virtual String listen();
     virtual bool sendMessage(Message transmission);
     bool hasConnectionAttached(int connection);
 
   private:
-    int attachedAdress;//es[10];
+    int *adressList;
+    unsigned int numberOfAdresses;
 
 };
 
 class CommunicationNode {
   public:
     //CommunicationNode();
-    CommunicationNode(Component *theComponent, CommunicationConnection *theCommunicationConnection);
-    bool sendMessage(Message transmission);
+    CommunicationNode(Component *componentList, unsigned int numberOfComponents, CommunicationConnection *communicationList, unsigned int numberOfConnections);
     void setInterrput(bool enableInterrupt);
     void loopAllAttached();
 
-    void attachComponent(Component *theComponent);
-
   private:
-    Component *attachedComponent;
-    CommunicationConnection *attachedConnection;
+    bool sendMessage(Message transmission);
+    Component *componentList;
+    unsigned int numberOfComponents;
+    CommunicationConnection *communicationList;
+    unsigned int numberOfConnections;
     /*
     Component attachedComponents[10];
     CommunicationConnection attachedConnections[5]; //id 0 = always top connection

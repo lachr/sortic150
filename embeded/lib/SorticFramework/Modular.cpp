@@ -1,11 +1,18 @@
 #include "Modular.h"
+/*
+void Message::switchAdresses() {
+  int a = target;
+  target = sender;
+  sender = a;
+}
+*/
 
 //some code if needed
 
 //Component::Component(int newAdress, int newTarget) {
-Component::Component() {
-  //adress = newAdress;
-  //target = newTarget;
+Component::Component(int adress, int target) {
+  this->adress = adress;
+  this->target = target;
 }
 
 void Component::setInterrupt(bool enableInterrupt) {
@@ -26,34 +33,26 @@ int Component::getAdress() {
 }
 
 //CommunicationConnection::CommunicationConnection(int adress) { //(&newAttachedAdresses)[10]
-CommunicationConnection::CommunicationConnection() { //(&newAttachedAdresses)[10]
- //attachedAdress = adress;
-  /*
-  for(unsigned int i = 0 ; i<sizeof(attachedAdresses)/sizeof(attachedAdresses[0]); i++) {
-    attachedAdresses[i] = newAttachedAdresses[i];
-  }
-  */
+CommunicationConnection::CommunicationConnection(int *adressList, unsigned int numberOfAdresses) { //(&newAttachedAdresses)[10]
+ this->adressList = adressList;
+ this->numberOfAdresses = numberOfAdresses;
 }
 
 bool CommunicationConnection::hasConnectionAttached(int connection){
-  /*
-  for(unsigned int i = 0 ; i<sizeof(attachedAdresses)/sizeof(attachedAdresses[0]); i++) {
-    if(attachedAdresses[i]==connection) {
-      return true;
-    }
+  for(unsigned int i = 0; i < numberOfAdresses; i++) {
+    if(*(adressList+i)==connection) return true;
   }
-  */
-  if(attachedAdress == connection) return true;
   return false;
 
 }
 
 //CommunicationNode::CommunicationNode() {
 
-CommunicationNode::CommunicationNode(Component *theComponent, CommunicationConnection *theCommunicationConnection) {
-  attachedComponent = theComponent;
-  attachedConnection = theCommunicationConnection;
-
+CommunicationNode::CommunicationNode(Component *componentList, unsigned int numberOfComponents, CommunicationConnection *communicationList, unsigned int numberOfConnections) {
+  this->componentList = componentList;
+  this->numberOfComponents = numberOfComponents;
+  this->communicationList = communicationList;
+  this->numberOfConnections = numberOfConnections;
 }
 
 
@@ -66,83 +65,78 @@ void CommunicationNode::setInterrput(bool enableInterrupt) {
 }
 
 bool CommunicationNode::sendMessage(Message transmission) {
-  if(transmission.target == attachedComponent->getAdress()) {
-    return attachedComponent->recieveMessage(transmission);
-  }
-  else {
-    return attachedConnection->sendMessage(transmission);
-  }
-
-  /*
-  for(unsigned int i = 0; i < sizeof(attachedComponents)/sizeof(attachedComponents[0]); i++) {
-    if(target == attachedComponents[i].getAdress()) {
-      return attachedComponents[i].recieveMessage(sender, message);
+  //Check components
+  for(unsigned int i = 0; i < numberOfComponents; i++) {
+    if(transmission.target == (componentList+i)->getAdress()) {
+      return (componentList+i)->recieveMessage(transmission);
     }
   }
 
-  for(unsigned int i = 0; i<sizeof(attachedConnections)/sizeof(attachedConnections[0]); i++) {
-    if(target == attachedConnections[i].hasConnectionAttached(target)){
-      return attachedConnections[i].sendMessage(target, sender, message);
+  //Check connections
+  for(unsigned int i = 0; i<numberOfConnections; i++) {
+    if((communicationList+i)->hasConnectionAttached(transmission.target)){
+      return (communicationList+i)->sendMessage(transmission);
     }
   }
-  return attachedConnections[0].sendMessage(target, sender, message);
-  */
+  return (communicationList)->sendMessage(transmission);
+
 }
 
 void CommunicationNode::loopAllAttached() {
-  Message currentMessage = attachedComponent->componentLoop();
-  if(currentMessage.hasMessage == true) {
-    this->sendMessage(currentMessage);
+
+  for(unsigned int i = 0; i<numberOfComponents; i++) {
+    Message currentMessage = (componentList+i)->componentLoop();
+
+    if(currentMessage.hasMessage == true) {
+      this->sendMessage(currentMessage);
+    }
+
   }
 
-  String recievedMessage = attachedConnection->listen();
 
-  if(!recievedMessage.equalsIgnoreCase("")) { //adress:sender:message
-    //ToDo: Sepparate message
+  for(unsigned int i = 0; i<numberOfConnections; i++) {
+    String recievedMessage = (communicationList+i)->listen();
 
-    Message currentMessage;
-    int indexA;
-    int indexB;
-    String substring;
+    if(!recievedMessage.equalsIgnoreCase("")) { //adress:sender:message
+      //ToDo: Sepparate message
 
-    indexA = recievedMessage.indexOf(';');
-    substring = recievedMessage.substring(0,indexA);
-    currentMessage.target = substring.toInt();
+      Message currentMessage;
+      int indexA;
+      int indexB;
+      String substring;
 
-    indexB = recievedMessage.indexOf(';',indexA+1);
-    substring = recievedMessage.substring(indexA+1,indexB);
-    currentMessage.sender = substring.toInt();
+      indexA = recievedMessage.indexOf(';');
+      substring = recievedMessage.substring(0,indexA);
+      currentMessage.target = substring.toInt();
 
-    currentMessage.message = recievedMessage.substring(indexB+1);
+      indexB = recievedMessage.indexOf(';',indexA+1);
+      substring = recievedMessage.substring(indexA+1,indexB);
+      currentMessage.sender = substring.toInt();
 
-    if(currentMessage.target == 2) {
+      currentMessage.message = recievedMessage.substring(indexB+1);
 
-      bool hasWorked = attachedComponent->recieveMessage(currentMessage);
-      if(!hasWorked){
-        Message errorMessage;
-        errorMessage.target = 1;
-        errorMessage.sender = 3;
-        errorMessage.message = "message not accepted";
+      if(this->sendMessage(currentMessage)) {
+        //If recieved correctly;
 
-        attachedConnection->sendMessage(errorMessage);
+        currentMessage.message = "Message delivered";
+        currentMessage.target = 1;
+        currentMessage.sender = 1;
+        this->sendMessage(currentMessage);
+
+      }
+      else {
+        //If not recieved correctly
+
+        //currentMessage.switchAdresses();
+        //currentMessage.message = "error:" + currentMessage.message;
+
+        currentMessage.message = "Error: Target = " + currentMessage.target;
+        currentMessage.message = currentMessage.message + ", Sender = " + currentMessage.sender; + ", Message = " + currentMessage.message;
+        currentMessage.target = 1;
+        currentMessage.sender = 1;
+        this->sendMessage(currentMessage);
       }
     }
-    //attachedConnection->sendMessage(target, sender, message);
   }
 
-  /*
-  for(unsigned int i = 0; i < sizeof(attachedComponents)/sizeof(attachedComponents[0]); i++) {
-    Message currentMessage = attachedComponents[i].componentLoop();
-    if(currentMessage.hasMessage) {
-      this->sendMessage(currentMessage.target, currentMessage.sender, currentMessage.message);
-    }
-
-  }
-  for(unsigned int i = 0; i < sizeof(attachedConnections)/sizeof(attachedConnections[0]); i++) {
-    String recievedMessage = attachedConnections[i].listen();
-    if(!recievedMessage.equalsIgnoreCase("")) {
-      //ToDo: Sepparate message
-    }
-  }
-  */
 }

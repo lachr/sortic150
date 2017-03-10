@@ -4,6 +4,17 @@
 #include "Arduino.h"
 #include "Modular.h"
 
+class Detector : public Component
+{
+  public:
+    Detector(int adress, int target);
+    virtual Message componentLoop();
+    bool recieveMessage(Message transmission);
+
+  protected:
+    bool scanning;
+};
+
 enum class MoverPosition {
   pickUp,
   dropA,
@@ -52,17 +63,6 @@ class Placer : public Component
     bool isMoving;
     PlacerActionType currentPlacerActionType;
     PlacerActionDirection currentPlacerActionDirection;
-};
-
-class Detector : public Component
-{
-  public:
-    Detector(int adress, int target);
-    virtual Message componentLoop();
-    bool recieveMessage(Message transmission);
-
-  protected:
-    bool scanning;
 };
 
 class SorticController : public Component

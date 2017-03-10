@@ -71,7 +71,6 @@ Message PlacerSeverin::componentLoop() {
     break;
 
     case 3: //claw Action
-
       if(currentPlacerActionType == PlacerActionType::pickUp) {
         if(millis()-startTime>clawCloseTime) {
           step++;
