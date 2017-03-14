@@ -83,7 +83,30 @@ bool CommunicationNode::sendMessage(Message transmission) {
 }
 
 void CommunicationNode::loopAllAttached() {
+  Message currentMessage = (componentList+1)->componentLoop();
 
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+
+  Message testMessage;
+  testMessage.hasMessage = true;
+  testMessage.message = "test";
+  testMessage.target = 1;
+  testMessage.sender = 1;
+
+  this->sendMessage(testMessage);
+
+
+  /*
+  Component * nextComponent = componentList +1;
+  currentMessage = nextComponent->componentLoop();
+
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+  */
+  /*
   for(unsigned int i = 0; i<numberOfComponents; i++) {
     Message currentMessage = (componentList+i)->componentLoop();
 
@@ -92,8 +115,9 @@ void CommunicationNode::loopAllAttached() {
     }
 
   }
+  */
 
-
+  /*
   for(unsigned int i = 0; i<numberOfConnections; i++) {
     String recievedMessage = (communicationList+i)->listen();
 
@@ -137,6 +161,6 @@ void CommunicationNode::loopAllAttached() {
         this->sendMessage(currentMessage);
       }
     }
-  }
+  }*/
 
 }

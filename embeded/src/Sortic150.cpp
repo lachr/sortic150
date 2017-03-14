@@ -24,13 +24,13 @@
 int DistanceSensorPin = A1;
 
 //Motors:
-/*
+
 Adafruit_MotorShield currentMotorShield = Adafruit_MotorShield();
 Adafruit_DCMotor *DriverMotor = currentMotorShield.getMotor(1);
 Adafruit_DCMotor *PlacerMotorBase = currentMotorShield.getMotor(2);
 Adafruit_DCMotor *PlacerMotorArm = currentMotorShield.getMotor(3);
 Adafruit_DCMotor *PlacerMotorClaw = currentMotorShield.getMotor(4);
-*/
+
 //RFID Detectors:
 MFRC522 PartDetector(6,5);
 
@@ -45,7 +45,7 @@ SerialConnection *USBConnection;
 
 CommunicationNode *currentNode;
 
-Component * attachedCompoents[1];
+Component * attachedCompoents[2];
 CommunicationConnection * attachedConnections[1];
 
 int adressListConnection1[1] = {1};
@@ -64,13 +64,13 @@ void setup() {
 
   attachedConnections[0] = new SerialConnection(&adressListConnection1[0], sizeof(adressListConnection1), 9600);
 
-  //currentMotorShield.begin();
+  currentMotorShield.begin();
   SPI.begin();
 
   //attachedCompoents[0] = new DummyDetector(101,1);
   attachedCompoents[0] = new DetectorSeverin(101,1,&PartDetector);
   //attachedCompoents[1] = new MoverSeverin(102,1,DriverMotor, DistanceSensorPin, 510, 400, 300, 200);
-  //attachedCompoents[2] = new PlacerSeverin(103,1,PlacerMotorBase, PlacerMotorArm, PlacerMotorClaw);
+  attachedCompoents[1] = new PlacerSeverin(103,1,PlacerMotorBase, PlacerMotorArm, PlacerMotorClaw);
 
   currentNode = new CommunicationNode(attachedCompoents[0], sizeof(attachedCompoents)/sizeof(attachedCompoents[0]), attachedConnections[0], sizeof(attachedConnections)/sizeof(attachedConnections[0]));
 

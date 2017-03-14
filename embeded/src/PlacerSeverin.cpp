@@ -23,18 +23,30 @@ PlacerSeverin::PlacerSeverin(int adress, int target, Adafruit_DCMotor *tempPlace
 
   hasStopped = true;
   step = 0;
-  //Serial.begin(9600);
 }
 
 Message PlacerSeverin::componentLoop() {
   Message currentMessage;
+  currentMessage.hasMessage = false;
 
   if(_componentState != working) {
     currentMessage.hasMessage = false;
     return currentMessage;
   }
-
+  /*
+  currentMessage.hasMessage = true;
+  currentMessage.message = "ping";
+  currentMessage.target = target;
+  currentMessage.sender = adress;
+  _componentState = idle;
+  return currentMessage;
+  */
   if(!isInitialized) {
+    currentMessage.hasMessage = true;
+    currentMessage.message = "is Initializing";
+    currentMessage.target = target;
+    currentMessage.sender = adress;
+
     isInitialized = true;
     startTime = millis();
     hasStopped = false;
@@ -44,6 +56,11 @@ Message PlacerSeverin::componentLoop() {
   switch(step) { //1 = turn,  2 = moveDown, 3 = clawAction, 4 = moveUp, 5 = turnBack
     case 1: //turn
       if((millis()-startTime>baseQuarterTurnTimeSave)||(currentPlacerActionDirection == PlacerActionDirection::front)) {
+        currentMessage.hasMessage = true;
+        currentMessage.message = "step 1 complete";
+        currentMessage.target = target;
+        currentMessage.sender = adress;
+
         step++;
         PlacerMotorBase->setSpeed(0);
         startTime = millis();
@@ -55,11 +72,20 @@ Message PlacerSeverin::componentLoop() {
       else if(currentPlacerActionDirection == PlacerActionDirection::right) {
         PlacerMotorBase->run(BACKWARD);
         PlacerMotorBase->setSpeed(driveSpeed);
+        currentMessage.hasMessage = true;
+        currentMessage.message = "speed = " + driveSpeed;
+        currentMessage.target = target;
+        currentMessage.sender = adress;
       }
     break;
 
     case 2: //moveDown
       if(millis()-startTime>armMoveDownTime) {
+        currentMessage.hasMessage = true;
+        currentMessage.message = "step 2 complete";
+        currentMessage.target = target;
+        currentMessage.sender = adress;
+
         step++;
         PlacerMotorArm->setSpeed(0);
         startTime = millis();
@@ -73,6 +99,11 @@ Message PlacerSeverin::componentLoop() {
     case 3: //claw Action
       if(currentPlacerActionType == PlacerActionType::pickUp) {
         if(millis()-startTime>clawCloseTime) {
+          currentMessage.hasMessage = true;
+          currentMessage.message = "step 3 complete";
+          currentMessage.target = target;
+          currentMessage.sender = adress;
+
           step++;
           PlacerMotorClaw->setSpeed(0);
           startTime = millis();
@@ -98,6 +129,11 @@ Message PlacerSeverin::componentLoop() {
 
     case 4: //moveUp
       if(millis()-startTime>armMoveUpTime) {
+        currentMessage.hasMessage = true;
+        currentMessage.message = "step 4 complete";
+        currentMessage.target = target;
+        currentMessage.sender = adress;
+
         step++;
         PlacerMotorArm->setSpeed(0);
         startTime = millis();
@@ -110,6 +146,11 @@ Message PlacerSeverin::componentLoop() {
 
     case 5: //turnBack
       if((millis()-startTime>baseQuarterTurnTimeSave)||(currentPlacerActionDirection == PlacerActionDirection::front)) {
+        currentMessage.hasMessage = true;
+        currentMessage.message = "step 5 complete";
+        currentMessage.target = target;
+        currentMessage.sender = adress;
+
         step++;
         PlacerMotorBase->setSpeed(0);
       }
@@ -132,6 +173,7 @@ Message PlacerSeverin::componentLoop() {
       currentPlacerActionType = PlacerActionType::none;
       step = 0;
       isInitialized = false;
+      _componentState = idle;
     break;
   }
 
