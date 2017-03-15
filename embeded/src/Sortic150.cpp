@@ -45,7 +45,7 @@ SerialConnection *USBConnection;
 
 CommunicationNode *currentNode;
 
-Component * attachedCompoents[2];
+Component * attachedCompoents[4];
 CommunicationConnection * attachedConnections[1];
 
 int adressListConnection1[1] = {1};
@@ -68,11 +68,12 @@ void setup() {
   SPI.begin();
 
   //attachedCompoents[0] = new DummyDetector(101,1);
-  attachedCompoents[0] = new DetectorSeverin(101,1,&PartDetector);
-  //attachedCompoents[1] = new MoverSeverin(102,1,DriverMotor, DistanceSensorPin, 510, 400, 300, 200);
-  attachedCompoents[1] = new PlacerSeverin(103,1,PlacerMotorBase, PlacerMotorArm, PlacerMotorClaw);
+  attachedCompoents[0] = new DetectorSeverin(101,100,&PartDetector);
+  attachedCompoents[1] = new MoverSeverin(102,100,DriverMotor, DistanceSensorPin, 510, 400, 300, 200);
+  attachedCompoents[2] = new PlacerSeverin(103,100,PlacerMotorBase, PlacerMotorArm, PlacerMotorClaw);
+  attachedCompoents[3] = new SorticController(100,1,102,103,101);
 
-  currentNode = new CommunicationNode(attachedCompoents[0], sizeof(attachedCompoents)/sizeof(attachedCompoents[0]), attachedConnections[0], sizeof(attachedConnections)/sizeof(attachedConnections[0]));
+  currentNode = new CommunicationNode(attachedCompoents[0], attachedCompoents[1], attachedCompoents[2], attachedCompoents[3], attachedConnections[0]);
 
   delay(2000);
 

@@ -9,13 +9,6 @@ class PlacerSeverin : public Placer
 {
   public:
     PlacerSeverin(int adress, int target, Adafruit_DCMotor *tempPlacerMotorBase, Adafruit_DCMotor *tempPlacerMotorArm, Adafruit_DCMotor *tempPlacerMotorClaw);
-    //void setAction(PlacerActionType newPlacerActionType, PlacerActionDirection newPlacerActionDirection);
-    /*
-    void pickUpLeft();
-    void pickUpRight();
-    void placeLeft();
-    void placeRight();
-    */
     Message componentLoop(); //true = complete, false = in progress
 
   private:
@@ -35,8 +28,6 @@ class PlacerSeverin : public Placer
     unsigned long clawOpenTime = 1200;
     unsigned long clawCloseTime = 1700;
     int driveSpeed = 200;
-
-
 };
 
 #endif

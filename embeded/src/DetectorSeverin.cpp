@@ -37,6 +37,7 @@ Message DetectorSeverin::componentLoop() {
   status = (MFRC522::StatusCode) PartDetector.MIFARE_Read(blockAddr, partArray, &bufferSize);
 
   if(status != MFRC522::STATUS_OK) {
+
     switch(status) {
       default:  // ignore Default STATUS_OK
       break;
@@ -73,8 +74,9 @@ Message DetectorSeverin::componentLoop() {
       currentMessage.message = "STATUS_TIMEOUT";
       break;
     }
-    currentMessage.message = "error" + currentMessage.message;
 
+    currentMessage.message = "error";// + currentMessage.message;
+    currentMessage.target = 1;
     return currentMessage;
   }
   else {

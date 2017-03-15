@@ -44,7 +44,7 @@ Message PlacerSeverin::componentLoop() {
   if(!isInitialized) {
     currentMessage.hasMessage = true;
     currentMessage.message = "is Initializing";
-    currentMessage.target = target;
+    currentMessage.target = 1;
     currentMessage.sender = adress;
 
     isInitialized = true;
@@ -58,7 +58,7 @@ Message PlacerSeverin::componentLoop() {
       if((millis()-startTime>baseQuarterTurnTimeSave)||(currentPlacerActionDirection == PlacerActionDirection::front)) {
         currentMessage.hasMessage = true;
         currentMessage.message = "step 1 complete";
-        currentMessage.target = target;
+        currentMessage.target = 1;
         currentMessage.sender = adress;
 
         step++;
@@ -74,7 +74,7 @@ Message PlacerSeverin::componentLoop() {
         PlacerMotorBase->setSpeed(driveSpeed);
         currentMessage.hasMessage = true;
         currentMessage.message = "speed = " + driveSpeed;
-        currentMessage.target = target;
+        currentMessage.target = 1;
         currentMessage.sender = adress;
       }
     break;
@@ -83,7 +83,7 @@ Message PlacerSeverin::componentLoop() {
       if(millis()-startTime>armMoveDownTime) {
         currentMessage.hasMessage = true;
         currentMessage.message = "step 2 complete";
-        currentMessage.target = target;
+        currentMessage.target = 1;
         currentMessage.sender = adress;
 
         step++;
@@ -101,7 +101,7 @@ Message PlacerSeverin::componentLoop() {
         if(millis()-startTime>clawCloseTime) {
           currentMessage.hasMessage = true;
           currentMessage.message = "step 3 complete";
-          currentMessage.target = target;
+          currentMessage.target = 1;
           currentMessage.sender = adress;
 
           step++;
@@ -131,7 +131,7 @@ Message PlacerSeverin::componentLoop() {
       if(millis()-startTime>armMoveUpTime) {
         currentMessage.hasMessage = true;
         currentMessage.message = "step 4 complete";
-        currentMessage.target = target;
+        currentMessage.target = 1;
         currentMessage.sender = adress;
 
         step++;
@@ -148,7 +148,7 @@ Message PlacerSeverin::componentLoop() {
       if((millis()-startTime>baseQuarterTurnTimeSave)||(currentPlacerActionDirection == PlacerActionDirection::front)) {
         currentMessage.hasMessage = true;
         currentMessage.message = "step 5 complete";
-        currentMessage.target = target;
+        currentMessage.target = 1;
         currentMessage.sender = adress;
 
         step++;

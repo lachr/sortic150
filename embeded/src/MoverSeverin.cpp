@@ -26,6 +26,7 @@ MoverSeverin::MoverSeverin(int adress, int target, Adafruit_DCMotor *tempDriverM
 
 Message MoverSeverin::componentLoop() {
   Message currentMessage;
+  currentMessage.hasMessage = false;
 
   if(_componentState != working) {
     currentMessage.hasMessage = false;
@@ -34,6 +35,7 @@ Message MoverSeverin::componentLoop() {
 
   if(!isInitialized) {
     isInitialized = true;
+    bahnHasStopped = false;
     for(int i = 0; i<4;i++) {
       if(positionMarked[i]==currentTarget) {
         targetPosition = positionValues[i];
@@ -48,6 +50,7 @@ Message MoverSeverin::componentLoop() {
   rawSensorValue = analogRead(distanceSensorPin);
   thisMedianFilter.UpdateFilter(rawSensorValue);
   filteredSensorValue = thisMedianFilter.getFilterValue();
+
 
   if(bahnHasStopped == true) {
     DriverMotor->run(RELEASE);
