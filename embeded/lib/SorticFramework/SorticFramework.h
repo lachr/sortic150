@@ -71,19 +71,22 @@ class SorticController : public Component
     //Functions;
     SorticController(int adress, int target, int mover, int placer, int detector);
     bool recieveMessage(Message transmission);
-    virtual Message componentLoop();
+    Message componentLoop();
 
   protected:
-    int placerAdress;
-    int detectorAdress;
-    int moverAdress;
-    MoverPosition currentDropTarget;
-    MoverPosition currentPickupTarget;
-    PlacerActionDirection currentPickupDirection;
-    PlacerActionDirection currentPlaceDirection;
-    bool moverIsFinished;
-    bool placerIsFinished;
-    String currentPartMessage;
+      int placerAdress;
+      int detectorAdress;
+      int moverAdress;
+      MoverPosition currentDropTarget;
+      MoverPosition currentPickupTarget;
+      PlacerActionDirection currentPickupDirection;
+      PlacerActionDirection currentPlaceDirection;
+      bool moverIsFinished;
+      bool placerIsFinished;
+      String currentPartMessage;
+      bool setNextIdle = false;
+      bool partDetected = false;
+      int step = 1; //1 = enable scan, 2 = drive to pickup, 3 = pickup part, 4 = drive to drop point, 5 = place part, 6 = drive back, decide what to do next
 };
 
 #endif

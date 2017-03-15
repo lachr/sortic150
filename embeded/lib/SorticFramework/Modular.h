@@ -17,7 +17,7 @@ struct Message
     bool hasMessage = true;
     int target;
     int sender;
-    String message;
+      String message;
 };
 
 class Component
@@ -29,7 +29,6 @@ class Component
     virtual bool recieveMessage(Message transmission);
     void setInterrupt(bool enableInterrupt);
     int getAdress();
-
 
   protected:
     ComponentState _componentState = idle; //ToDo: Replace _Underline
@@ -54,16 +53,25 @@ class CommunicationConnection {
 class CommunicationNode {
   public:
     //CommunicationNode();
-    CommunicationNode(Component *componentList, unsigned int numberOfComponents, CommunicationConnection *communicationList, unsigned int numberOfConnections);
+    CommunicationNode(Component *firstComponent, Component *secondComponent, Component *thirdComponent, Component *fourthComponent, CommunicationConnection *firstCommunicationConnection);
+    //CommunicationNode(Component *componentList, unsigned int numberOfComponents, CommunicationConnection *communicationList, unsigned int numberOfConnections);
     void setInterrput(bool enableInterrupt);
     void loopAllAttached();
 
   private:
     bool sendMessage(Message transmission);
+    Component *firstComponent;
+    Component *secondComponent;
+    Component *thirdComponent;
+    Component *fourthComponent;
+    CommunicationConnection *firstCommunicationConnection;
+
+    /*
     Component *componentList;
     unsigned int numberOfComponents;
     CommunicationConnection *communicationList;
     unsigned int numberOfConnections;
+    */
     /*
     Component attachedComponents[10];
     CommunicationConnection attachedConnections[5]; //id 0 = always top connection

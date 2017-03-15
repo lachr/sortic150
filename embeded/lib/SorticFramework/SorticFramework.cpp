@@ -84,20 +84,125 @@ SorticController::SorticController(int adress, int target, int mover, int placer
   moverAdress = mover;
   placerAdress = placer;
   detectorAdress = detector;
+
 }
 
 bool SorticController::recieveMessage(Message transmission) {
   if(transmission.sender == detectorAdress) {
     if(!transmission.message.equalsIgnoreCase("error")) {
-      transmission.message = currentPartMessage;
-      if(_componentState == idle) _componentState = working;
+      currentPartMessage = transmission.message;
+      partDetected = true;
+      currentPickupDirection = PlacerActionDirection::left;
+      currentPlaceDirection = PlacerActionDirection::left;
     }
   }
   else if(transmission.message.equalsIgnoreCase("complete")) {
     if(transmission.sender == moverAdress) moverIsFinished = true;
-    if(transmission.sender == placerAdress) placerIsFinished = true;
-    if(moverIsFinished && placerIsFinished) _componentState = idle;
+    else if(transmission.sender == placerAdress) placerIsFinished = true;
+    else return false;
+  }
+  else if(transmission.message.equalsIgnoreCase("begin")) {
+    if(_componentState == idle) {
+      _componentState = working;
+    }
+    else return false;
+  }
+  else if(transmission.message.equalsIgnoreCase("stop")) {
+    if(_componentState == idle) return true;
+    if(_componentState == working) {
+      setNextIdle = true;
+    }
+    else return false;
   }
   else return false;
   return true;
+}
+
+Message SorticController::componentLoop() {
+  Message currentMessage;
+  currentMessage.hasMessage = false;
+  currentMessage.sender = adress;
+
+  if(_componentState == working){
+    switch(step) { //1 = enable scan, 2 = drive to pickup, 3 = pickup part, 4 = drive to drop point, 5 = place part, 6 = drive back, decide what to do next
+      case 1:
+        currentMessage.target = detectorAdress;
+        currentMessage.message = "scan enable";
+        currentMessage.hasMessage = true;
+        step++;
+      break;
+
+      case 2:
+        if(setNextIdle) {
+          step = 1;
+          setNextIdle = false;
+          _componentState = idle;
+          break;
+        }
+        if(partDetected) {
+          currentMessage.target = moverAdress;
+          currentMessage.message = "MoveTo PickUp";
+          currentMessage.hasMessage = true;
+          moverIsFinished = false;
+          step++;
+        }
+      break;
+
+      case 3:
+        if(setNextIdle) {
+          step = 1;
+          setNextIdle = false;
+          _componentState = idle;
+          break;
+        }
+        if(moverIsFinished) {
+          currentMessage.target = placerAdress;
+          if(currentPickupDirection == PlacerActionDirection::left) currentMessage.message = "Pickup Left";
+          if(currentPickupDirection == PlacerActionDirection::right) currentMessage.message = "Pickup Right";
+          currentMessage.hasMessage = true;
+          placerIsFinished = false;
+          partDetected = false;
+          step++;
+        }
+      break;
+
+      case 4:
+        if(placerIsFinished) {
+          currentMessage.target = moverAdress;
+          currentMessage.message = "MoveTo DropA";
+          currentMessage.hasMessage = true;
+          moverIsFinished = false;
+          step++;
+        }
+      break;
+
+      case 5:
+        if(moverIsFinished) {
+          currentMessage.target = placerAdress;
+          if(currentPlaceDirection == PlacerActionDirection::left) currentMessage.message = "Place Left";
+          if(currentPlaceDirection == PlacerActionDirection::right) currentMessage.message = "Place Right";
+          currentMessage.hasMessage = true;
+          placerIsFinished = false;
+          step++;
+        }
+      break;
+
+      case 6:
+        if(placerIsFinished) {
+          currentMessage.target = moverAdress;
+          currentMessage.message = "MoveTo PickUp";
+          currentMessage.hasMessage = true;
+          moverIsFinished = false;
+          step++;
+        }
+      break;
+
+      case 7:
+        if(setNextIdle) _componentState = idle;
+        step = 1;
+      break;
+    }
+  }
+
+  return currentMessage;
 }

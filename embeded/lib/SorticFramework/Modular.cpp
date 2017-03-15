@@ -48,12 +48,22 @@ bool CommunicationConnection::hasConnectionAttached(int connection){
 
 //CommunicationNode::CommunicationNode() {
 
+CommunicationNode::CommunicationNode(Component *firstComponent, Component *secondComponent, Component *thirdComponent, Component *fourthComponent, CommunicationConnection *firstCommunicationConnection) {
+  this->firstComponent = firstComponent;
+  this->secondComponent = secondComponent;
+  this->thirdComponent = thirdComponent;
+  this->fourthComponent = fourthComponent;
+  this->firstCommunicationConnection = firstCommunicationConnection;
+}
+
+/*
 CommunicationNode::CommunicationNode(Component *componentList, unsigned int numberOfComponents, CommunicationConnection *communicationList, unsigned int numberOfConnections) {
   this->componentList = componentList;
   this->numberOfComponents = numberOfComponents;
   this->communicationList = communicationList;
   this->numberOfConnections = numberOfConnections;
 }
+*/
 
 
 void CommunicationNode::setInterrput(bool enableInterrupt) {
@@ -66,6 +76,14 @@ void CommunicationNode::setInterrput(bool enableInterrupt) {
 
 bool CommunicationNode::sendMessage(Message transmission) {
   //Check components
+
+  if(firstComponent->getAdress() == transmission.target) return firstComponent->recieveMessage(transmission);
+  if(secondComponent->getAdress() == transmission.target) return secondComponent->recieveMessage(transmission);
+  if(thirdComponent->getAdress() == transmission.target) return thirdComponent->recieveMessage(transmission);
+  if(fourthComponent->getAdress() == transmission.target) return fourthComponent->recieveMessage(transmission);
+
+  return firstCommunicationConnection->sendMessage(transmission);
+  /*
   for(unsigned int i = 0; i < numberOfComponents; i++) {
     if(transmission.target == (componentList+i)->getAdress()) {
       return (componentList+i)->recieveMessage(transmission);
@@ -79,10 +97,76 @@ bool CommunicationNode::sendMessage(Message transmission) {
     }
   }
   return (communicationList)->sendMessage(transmission);
-
+  */
 }
 
 void CommunicationNode::loopAllAttached() {
+  Message currentMessage;
+
+  currentMessage = firstComponent->componentLoop();
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+
+  currentMessage = secondComponent->componentLoop();
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+
+  currentMessage = thirdComponent->componentLoop();
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+
+  currentMessage = fourthComponent->componentLoop();
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+
+  String recievedMessage = firstCommunicationConnection->listen();
+  if(!recievedMessage.equalsIgnoreCase("")) { //adress:sender:message
+    //ToDo: Sepparate message
+
+    Message currentMessage;
+    int indexA;
+    int indexB;
+    String substring;
+
+    indexA = recievedMessage.indexOf(';');
+    substring = recievedMessage.substring(0,indexA);
+    currentMessage.target = substring.toInt();
+
+    indexB = recievedMessage.indexOf(';',indexA+1);
+    substring = recievedMessage.substring(indexA+1,indexB);
+    currentMessage.sender = substring.toInt();
+
+    currentMessage.message = recievedMessage.substring(indexB+1);
+
+    if(this->sendMessage(currentMessage)) {
+      //If recieved correctly;
+
+      currentMessage.message = "Message delivered";
+      currentMessage.target = 1;
+      currentMessage.sender = 1;
+      this->sendMessage(currentMessage);
+
+    }
+    else {
+      //If not recieved correctly
+
+      //currentMessage.switchAdresses();
+      //currentMessage.message = "error:" + currentMessage.message;
+
+      currentMessage.message = "Error: Target = " + currentMessage.target;
+      currentMessage.message = currentMessage.message + ", Sender = " + currentMessage.sender; + ", Message = " + currentMessage.message;
+      currentMessage.target = 1;
+      currentMessage.sender = 1;
+      this->sendMessage(currentMessage);
+    }
+  }
+
+
+  /*
   Message currentMessage = (componentList+1)->componentLoop();
 
   if(currentMessage.hasMessage == true) {
@@ -97,7 +181,7 @@ void CommunicationNode::loopAllAttached() {
 
   this->sendMessage(testMessage);
 
-
+  */
   /*
   Component * nextComponent = componentList +1;
   currentMessage = nextComponent->componentLoop();
