@@ -48,11 +48,12 @@ bool CommunicationConnection::hasConnectionAttached(int connection){
 
 //CommunicationNode::CommunicationNode() {
 
-CommunicationNode::CommunicationNode(Component *firstComponent, Component *secondComponent, Component *thirdComponent, Component *fourthComponent, CommunicationConnection *firstCommunicationConnection) {
+CommunicationNode::CommunicationNode(Component *firstComponent, Component *secondComponent, Component *thirdComponent, Component *fourthComponent, Component *fifthComponent, CommunicationConnection *firstCommunicationConnection) {
   this->firstComponent = firstComponent;
   this->secondComponent = secondComponent;
   this->thirdComponent = thirdComponent;
   this->fourthComponent = fourthComponent;
+  this->fifthComponent = fifthComponent;
   this->firstCommunicationConnection = firstCommunicationConnection;
 }
 
@@ -81,6 +82,7 @@ bool CommunicationNode::sendMessage(Message transmission) {
   if(secondComponent->getAdress() == transmission.target) return secondComponent->recieveMessage(transmission);
   if(thirdComponent->getAdress() == transmission.target) return thirdComponent->recieveMessage(transmission);
   if(fourthComponent->getAdress() == transmission.target) return fourthComponent->recieveMessage(transmission);
+  if(fifthComponent->getAdress() == transmission.target) return fifthComponent->recieveMessage(transmission);
 
   return firstCommunicationConnection->sendMessage(transmission);
   /*
@@ -119,6 +121,11 @@ void CommunicationNode::loopAllAttached() {
   }
 
   currentMessage = fourthComponent->componentLoop();
+  if(currentMessage.hasMessage == true) {
+    this->sendMessage(currentMessage);
+  }
+
+  currentMessage = fifthComponent->componentLoop();
   if(currentMessage.hasMessage == true) {
     this->sendMessage(currentMessage);
   }

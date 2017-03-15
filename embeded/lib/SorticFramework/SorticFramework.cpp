@@ -80,11 +80,11 @@ bool Placer::recieveMessage(Message transmission) {
 
 
 
-SorticController::SorticController(int adress, int target, int mover, int placer, int detector) : Component(adress, target) {
+SorticController::SorticController(int adress, int target, int mover, int placer, int sortingList, int detector) : Component(adress, target) {
   moverAdress = mover;
   placerAdress = placer;
   detectorAdress = detector;
-
+  sortingListAdress = sortingList;
 }
 
 bool SorticController::recieveMessage(Message transmission) {
@@ -92,8 +92,8 @@ bool SorticController::recieveMessage(Message transmission) {
     if(!transmission.message.equalsIgnoreCase("error")) {
       currentPartMessage = transmission.message;
       partDetected = true;
-      currentPickupDirection = PlacerActionDirection::left;
-      currentPlaceDirection = PlacerActionDirection::left;
+      currentPickupDirection = "left";
+      currentPickupPosition = "PickUp";
     }
   }
   else if(transmission.message.equalsIgnoreCase("complete")) {
@@ -114,6 +114,12 @@ bool SorticController::recieveMessage(Message transmission) {
     }
     else return false;
   }
+  else if(transmission.sender == sortingListAdress) {
+    int sepparator =  transmission.message.indexOf(':');
+    currentPlacePosition = transmission.message.substring(0,sepparator);
+    currentPlaceDirection = transmission.message.substring(sepparator+2,transmission.message.length());
+    partIdentified = true;
+  }
   else return false;
   return true;
 }
@@ -132,7 +138,7 @@ Message SorticController::componentLoop() {
         step++;
       break;
 
-      case 2:
+      case 2: {
         if(setNextIdle) {
           step = 1;
           setNextIdle = false;
@@ -140,13 +146,13 @@ Message SorticController::componentLoop() {
           break;
         }
         if(partDetected) {
-          currentMessage.target = moverAdress;
-          currentMessage.message = "MoveTo PickUp";
+          currentMessage.target = sortingListAdress;
+          currentMessage.message = currentPartMessage;
           currentMessage.hasMessage = true;
-          moverIsFinished = false;
+          partIdentified = false;
           step++;
         }
-      break;
+      }
 
       case 3:
         if(setNextIdle) {
@@ -155,10 +161,26 @@ Message SorticController::componentLoop() {
           _componentState = idle;
           break;
         }
+        if(partIdentified) {
+          currentMessage.target = moverAdress;
+          currentMessage.message = "MoveTo " + currentPickupPosition;
+          currentMessage.hasMessage = true;
+          moverIsFinished = false;
+
+          step++;
+        }
+      break;
+
+      case 4:
+        if(setNextIdle) {
+          step = 1;
+          setNextIdle = false;
+          _componentState = idle;
+          break;
+        }
         if(moverIsFinished) {
           currentMessage.target = placerAdress;
-          if(currentPickupDirection == PlacerActionDirection::left) currentMessage.message = "Pickup Left";
-          if(currentPickupDirection == PlacerActionDirection::right) currentMessage.message = "Pickup Right";
+          currentMessage.message = "Pickup " + currentPickupDirection;
           currentMessage.hasMessage = true;
           placerIsFinished = false;
           partDetected = false;
@@ -166,38 +188,37 @@ Message SorticController::componentLoop() {
         }
       break;
 
-      case 4:
+      case 5:
         if(placerIsFinished) {
           currentMessage.target = moverAdress;
-          currentMessage.message = "MoveTo DropA";
+          currentMessage.message = "MoveTo " + currentPlacePosition;
           currentMessage.hasMessage = true;
           moverIsFinished = false;
           step++;
         }
       break;
 
-      case 5:
+      case 6:
         if(moverIsFinished) {
           currentMessage.target = placerAdress;
-          if(currentPlaceDirection == PlacerActionDirection::left) currentMessage.message = "Place Left";
-          if(currentPlaceDirection == PlacerActionDirection::right) currentMessage.message = "Place Right";
+          currentMessage.message = "Place "+ currentPlaceDirection;
           currentMessage.hasMessage = true;
           placerIsFinished = false;
           step++;
         }
       break;
 
-      case 6:
+      case 7:
         if(placerIsFinished) {
           currentMessage.target = moverAdress;
-          currentMessage.message = "MoveTo PickUp";
+          currentMessage.message = "MoveTo " + currentPickupPosition;
           currentMessage.hasMessage = true;
           moverIsFinished = false;
           step++;
         }
       break;
 
-      case 7:
+      case 8:
         if(setNextIdle) _componentState = idle;
         step = 1;
       break;

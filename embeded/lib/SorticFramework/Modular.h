@@ -17,7 +17,7 @@ struct Message
     bool hasMessage = true;
     int target;
     int sender;
-      String message;
+    String message;
 };
 
 class Component
@@ -53,7 +53,7 @@ class CommunicationConnection {
 class CommunicationNode {
   public:
     //CommunicationNode();
-    CommunicationNode(Component *firstComponent, Component *secondComponent, Component *thirdComponent, Component *fourthComponent, CommunicationConnection *firstCommunicationConnection);
+    CommunicationNode(Component *firstComponent, Component *secondComponent, Component *thirdComponent, Component *fourthComponent, Component *fifthComponent, CommunicationConnection *firstCommunicationConnection);
     //CommunicationNode(Component *componentList, unsigned int numberOfComponents, CommunicationConnection *communicationList, unsigned int numberOfConnections);
     void setInterrput(bool enableInterrupt);
     void loopAllAttached();
@@ -64,6 +64,7 @@ class CommunicationNode {
     Component *secondComponent;
     Component *thirdComponent;
     Component *fourthComponent;
+    Component *fifthComponent;
     CommunicationConnection *firstCommunicationConnection;
 
     /*

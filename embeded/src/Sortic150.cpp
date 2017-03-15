@@ -8,12 +8,10 @@
 
 #include "SorticFramework.h"
 
-//#include "SorticMachineSeverin.h"
 #include "MoverSeverin.h"
 #include "PlacerSeverin.h"
 #include "DetectorSeverin.h"
-
-
+#include "SortingList.h"
 #include "DummyComponents.h"
 #include "SorticFramework.h"
 #include "SerialConnection.h"
@@ -45,7 +43,7 @@ SerialConnection *USBConnection;
 
 CommunicationNode *currentNode;
 
-Component * attachedCompoents[4];
+Component * attachedCompoents[5];
 CommunicationConnection * attachedConnections[1];
 
 int adressListConnection1[1] = {1};
@@ -68,12 +66,13 @@ void setup() {
   SPI.begin();
 
   //attachedCompoents[0] = new DummyDetector(101,1);
-  attachedCompoents[0] = new DetectorSeverin(101,100,&PartDetector);
+  attachedCompoents[0] = new DetectorSeverin(101,1,&PartDetector);
   attachedCompoents[1] = new MoverSeverin(102,100,DriverMotor, DistanceSensorPin, 510, 400, 300, 200);
   attachedCompoents[2] = new PlacerSeverin(103,100,PlacerMotorBase, PlacerMotorArm, PlacerMotorClaw);
-  attachedCompoents[3] = new SorticController(100,1,102,103,101);
+  attachedCompoents[4] = new SortingList(104, 1, "4:135:115:120:162:231:73:128", "4:186:115:69:162:231:73:128");
+  attachedCompoents[3] = new SorticController(100,1,102,103,1,101);
 
-  currentNode = new CommunicationNode(attachedCompoents[0], attachedCompoents[1], attachedCompoents[2], attachedCompoents[3], attachedConnections[0]);
+  currentNode = new CommunicationNode(attachedCompoents[0], attachedCompoents[1], attachedCompoents[2], attachedCompoents[3], attachedCompoents[4], attachedConnections[0]);
 
   delay(2000);
 

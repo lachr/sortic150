@@ -69,7 +69,7 @@ class SorticController : public Component
 {
   public:
     //Functions;
-    SorticController(int adress, int target, int mover, int placer, int detector);
+    SorticController(int adress, int target, int mover, int placer, int detector, int sortingList);
     bool recieveMessage(Message transmission);
     Message componentLoop();
 
@@ -77,15 +77,19 @@ class SorticController : public Component
       int placerAdress;
       int detectorAdress;
       int moverAdress;
-      MoverPosition currentDropTarget;
-      MoverPosition currentPickupTarget;
-      PlacerActionDirection currentPickupDirection;
-      PlacerActionDirection currentPlaceDirection;
+      int sortingListAdress;
+
+      String currentPlacePosition;
+      String currentPickupPosition;
+      String currentPickupDirection;
+      String currentPlaceDirection;
+
       bool moverIsFinished;
       bool placerIsFinished;
       String currentPartMessage;
       bool setNextIdle = false;
       bool partDetected = false;
+      bool partIdentified;
       int step = 1; //1 = enable scan, 2 = drive to pickup, 3 = pickup part, 4 = drive to drop point, 5 = place part, 6 = drive back, decide what to do next
 };
 
