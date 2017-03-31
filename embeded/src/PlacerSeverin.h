@@ -22,7 +22,7 @@ class PlacerSeverin : public Placer
     bool isInitialized = false;
 
     unsigned long baseQuarterTurnTimePercise = 3400;
-    unsigned long baseQuarterTurnTimeSave = 4000;
+    unsigned long baseQuarterTurnTimeSave = 4200;
     unsigned long armMoveUpTime = 2100;
     unsigned long armMoveDownTime = 2100;
     unsigned long clawOpenTime = 1200;
