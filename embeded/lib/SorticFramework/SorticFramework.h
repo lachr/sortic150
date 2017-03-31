@@ -84,12 +84,12 @@ class SorticController : public Component
       String currentPickupDirection;
       String currentPlaceDirection;
 
-      bool moverIsFinished;
-      bool placerIsFinished;
+      bool moverIsFinished = false;
+      bool placerIsFinished = false;
       String currentPartMessage;
       bool setNextIdle = false;
       bool partDetected = false;
-      bool partIdentified;
+      bool partIdentified = false;
       int step = 1; //1 = enable scan, 2 = drive to pickup, 3 = pickup part, 4 = drive to drop point, 5 = place part, 6 = drive back, decide what to do next
 };
 

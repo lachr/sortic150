@@ -66,16 +66,12 @@ Message PlacerSeverin::componentLoop() {
         startTime = millis();
       }
       else if(currentPlacerActionDirection == PlacerActionDirection::left) {
-        PlacerMotorBase->run(FORWARD);
+        PlacerMotorBase->run(BACKWARD);
         PlacerMotorBase->setSpeed(driveSpeed);
       }
       else if(currentPlacerActionDirection == PlacerActionDirection::right) {
-        PlacerMotorBase->run(BACKWARD);
+        PlacerMotorBase->run(FORWARD);
         PlacerMotorBase->setSpeed(driveSpeed);
-        currentMessage.hasMessage = true;
-        currentMessage.message = "speed = " + driveSpeed;
-        currentMessage.target = 1;
-        currentMessage.sender = adress;
       }
     break;
 
@@ -155,11 +151,11 @@ Message PlacerSeverin::componentLoop() {
         PlacerMotorBase->setSpeed(0);
       }
       else if(currentPlacerActionDirection == PlacerActionDirection::left) {
-        PlacerMotorBase->run(BACKWARD);
+        PlacerMotorBase->run(FORWARD);
         PlacerMotorBase->setSpeed(driveSpeed);
       }
       else if(currentPlacerActionDirection == PlacerActionDirection::right) {
-        PlacerMotorBase->run(FORWARD);
+        PlacerMotorBase->run(BACKWARD);
         PlacerMotorBase->setSpeed(driveSpeed);
       }
     break;

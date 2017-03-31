@@ -80,7 +80,7 @@ bool Placer::recieveMessage(Message transmission) {
 
 
 
-SorticController::SorticController(int adress, int target, int mover, int placer, int sortingList, int detector) : Component(adress, target) {
+SorticController::SorticController(int adress, int target, int mover, int placer, int detector, int sortingList) : Component(adress, target) {
   moverAdress = mover;
   placerAdress = placer;
   detectorAdress = detector;
@@ -117,7 +117,7 @@ bool SorticController::recieveMessage(Message transmission) {
   else if(transmission.sender == sortingListAdress) {
     int sepparator =  transmission.message.indexOf(':');
     currentPlacePosition = transmission.message.substring(0,sepparator);
-    currentPlaceDirection = transmission.message.substring(sepparator+2,transmission.message.length());
+    currentPlaceDirection = transmission.message.substring(sepparator+1,transmission.message.length());
     partIdentified = true;
   }
   else return false;
@@ -130,20 +130,22 @@ Message SorticController::componentLoop() {
   currentMessage.sender = adress;
 
   if(_componentState == working){
-    switch(step) { //1 = enable scan, 2 = drive to pickup, 3 = pickup part, 4 = drive to drop point, 5 = place part, 6 = drive back, decide what to do next
+    switch(step) { //1 = enable scan, 2 = get orders, 3 = drive to pickup, 4 = pickup part, 5 = drive to drop point, 6 = place part, 7 = drive back, 8 = decide what to do next
       case 1:
         currentMessage.target = detectorAdress;
         currentMessage.message = "scan enable";
         currentMessage.hasMessage = true;
+        partDetected = false;
         step++;
       break;
 
-      case 2: {
+      case 2:
         if(setNextIdle) {
           step = 1;
           setNextIdle = false;
           _componentState = idle;
           break;
+
         }
         if(partDetected) {
           currentMessage.target = sortingListAdress;
@@ -152,7 +154,7 @@ Message SorticController::componentLoop() {
           partIdentified = false;
           step++;
         }
-      }
+      break;
 
       case 3:
         if(setNextIdle) {
@@ -162,6 +164,7 @@ Message SorticController::componentLoop() {
           break;
         }
         if(partIdentified) {
+          partIdentified = false;
           currentMessage.target = moverAdress;
           currentMessage.message = "MoveTo " + currentPickupPosition;
           currentMessage.hasMessage = true;
@@ -173,8 +176,8 @@ Message SorticController::componentLoop() {
 
       case 4:
         if(setNextIdle) {
-          step = 1;
           setNextIdle = false;
+          step = 1;
           _componentState = idle;
           break;
         }
@@ -219,8 +222,10 @@ Message SorticController::componentLoop() {
       break;
 
       case 8:
-        if(setNextIdle) _componentState = idle;
-        step = 1;
+        if(moverIsFinished) {
+          if(setNextIdle) _componentState = idle;
+          step = 1;
+        }
       break;
     }
   }

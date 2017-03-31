@@ -6,7 +6,7 @@
 
 class SortingList : public Component {
   public:
-    SortingList(int adress, int target, String part1, String pat2);
+    SortingList(int adress, int target, String part1, String part2);
     Message componentLoop();
     bool recieveMessage(Message transmission);
 
